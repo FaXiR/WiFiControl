@@ -5,7 +5,7 @@ namespace WiFiControlLogic.Modules
     /// <summary>
     /// Проверка потерь и средней задержки к адресу
     /// </summary>
-    class CMDping : CMDbase
+    public class CMDping : CMDbase
     {
         public string URL { get; }
         public string Losses { private set; get; } = null;

@@ -6,7 +6,7 @@ namespace WiFiControlLogic.Modules
     /// <summary>
     /// Получает ифнормацю о состоянии WiFi и подключениях. А также управляет состоянием WiFi
     /// </summary>
-    class CMDWiFi : CMDbase
+    public class CMDWiFi : CMDbase
     {
         public string WiFiStatus { private set; get; }
         public string ReceivedWiFiName { private set; get; }

@@ -5,7 +5,7 @@ namespace WiFiControlLogic.Modules
     /// <summary>
     /// Получает ифнормацию о переданных и принятых данных по Ethernet за время работы ПК
     /// </summary>
-    class CMDEthernet : CMDbase
+    public class CMDEthernet : CMDbase
     {
         public Int64 ByteInp { private set; get; }
         public Int64 ByteOut { private set; get; }

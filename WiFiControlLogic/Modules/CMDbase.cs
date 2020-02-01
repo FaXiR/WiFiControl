@@ -7,7 +7,7 @@ namespace WiFiControlLogic.Modules
     /// <summary>
     /// Класс исполнений CMD комманд
     /// </summary>
-    class CMDbase
+    public class CMDbase
     {
         /// <summary>
         /// Скрытное исполнение CMD команды

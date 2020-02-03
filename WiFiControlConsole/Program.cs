@@ -16,9 +16,9 @@ namespace WiFiControlConsole
             var Ping = new CMDping[]
             {
                 new CMDping("yandex.ru"),
-                new CMDping("google.com"),
-                new CMDping("yahoo.com"),
-                new CMDping("mail.ru"),
+            //    new CMDping("google.com"),
+            //    new CMDping("yahoo.com"),
+            //    new CMDping("mail.ru"),
             };                    
 
             while (true)
@@ -34,7 +34,10 @@ namespace WiFiControlConsole
                 Ethernet.InfoToConsole();
                 Console.WriteLine();
 
-                WiFi.CMDShowHostedNetwork();
+                //WiFi.CMDShowHostedNetwork();
+                WiFi.UpdateInfo();
+                WiFi.InfoToConsole();
+                Console.WriteLine();
 
                 Console.WriteLine("---------------------------");
                 Console.WriteLine();

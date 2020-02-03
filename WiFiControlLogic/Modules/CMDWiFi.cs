@@ -10,7 +10,27 @@ namespace WiFiControlLogic.Modules
     {
         public string WiFiStatus { private set; get; }
         public string ReceivedWiFiName { private set; get; }
-        public List<string> ListMAC { private set; get; }
+        public List<string> ListMAC { private set; get; } = new List<string>();
+
+        /// <summary>
+        /// Задает название сети и пароль
+        /// </summary>
+        /// <param name="Login">Имя сети</param>
+        /// <param name="Password">Пароль сети</param>
+        public void CMDSetNamePassword(string Login, string Password)
+        {
+            if (Password.Length < 8 || Password.Length > 0)
+            {
+                throw new ArgumentException("Пароль не может быть короче 8 символов");
+            }
+
+            string result = CMDexecute($"netsh wlan set hostednetwork mode = allow ssid = {Login} key = {Password}");
+
+            if (result.IndexOf("Один или несколько параметров команды отсутсвуют") != -1)
+            {
+                throw new NullReferenceException("Ошибка установки логина/пароля, подробнее: " + result);
+            }
+        }
 
         /// <summary>
         /// Запускает видимое CMD окно с командой netsh wlan show hostednetwork && Timeout /t 
@@ -56,11 +76,68 @@ namespace WiFiControlLogic.Modules
                 throw new NullReferenceException(result);
             }
 
-            WiFiStatus = null;
             ReceivedWiFiName = null;
-            ListMAC.Clear();
+            int index = result.IndexOf(@"Имя идентификатора SSID : """) + 27;
+            while (true)
+            {
+                if (result[index] == '"')
+                {
+                    break;
+                }
+                ReceivedWiFiName += result[index];
+                index++;
+            }
 
-            // TODO: допилить обновление данных
+            WiFiStatus = null;
+            index = result.LastIndexOf("Состояние");
+            while (true)
+            {
+                index++;
+                if (result[index] == ':')
+                {
+                    while (true)
+                    {
+                        index++;
+                        if (result[index] != ' ')
+                        {
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            while (true)
+            {
+                if (result[index] == '\r')
+                {
+                    break;
+                }
+                WiFiStatus += result[index];
+                index++;
+            }
+
+            ListMAC.Clear();
+            index = result.IndexOf("Проверка подлинности выполнена");
+            if (index == -1)
+                return;
+            result = result.Substring(0, result.Length - 4).Substring(index - 33);
+            result = result.Replace("Проверка подлинности выполнена", "");
+            result = result.Replace("\n", "");
+            result = result.Replace(" ", "");
+            ListMAC.AddRange(result.Split(new char[] { '\r' }));
+        }
+
+        /// <summary>
+        /// Вывод данных из ReceivedWiFiName, WiFiStatus и ListMAC в консоль
+        /// </summary>
+        public void InfoToConsole()
+        {
+            Console.WriteLine(ReceivedWiFiName);
+            Console.WriteLine(WiFiStatus);
+            foreach (string MAC in ListMAC)
+            {
+                Console.WriteLine(MAC);
+            }
         }
     }
 }

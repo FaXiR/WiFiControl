@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WiFiControlLogic.Modules;
+using System.IO;
 
 namespace WiFiControlConsole
 {
@@ -14,7 +12,9 @@ namespace WiFiControlConsole
             bool WiFiExecute = true;
             bool EthernetExecute = true;
             bool PingExecute = true;
+            bool MACexecute = true;
 
+            var MACcomp = new MACcomparsion();
             var WiFi = new CMDWiFi();
             var Ethernet = new CMDEthernet();
             var Ping = new CMDping[]
@@ -55,7 +55,7 @@ namespace WiFiControlConsole
                     catch (Exception ex)
                     {
                         EthernetExecute = false;
-                        Console.WriteLine("Ошибка Ethernet модуля " + ex);                        
+                        Console.WriteLine("Ошибка Ethernet модуля " + ex);
                     }
                     Console.WriteLine();
                 }
@@ -64,7 +64,7 @@ namespace WiFiControlConsole
                 {
                     try
                     {
-                    //    WiFi.CMDShowHostedNetwork();
+                        //    WiFi.CMDShowHostedNetwork();
                         WiFi.UpdateInfo();
                         WiFi.InfoToConsole();
                     }
@@ -72,6 +72,30 @@ namespace WiFiControlConsole
                     {
                         WiFiExecute = false;
                         Console.WriteLine("Ошибка WiFi модуля " + ex);
+                    }
+                    Console.WriteLine();
+                }
+
+                if (MACexecute)
+                {
+                    try
+                    {
+                        List<string> MAC = new List<String>();
+                        string[] MACUserList = File.ReadAllLines(@"C:\Users\FaXiR\Desktop\MACList.txt");
+                        for (int i =0; i < MACUserList.Length; i++)
+                        {
+                            MAC.Add(MACUserList[i]);
+                        }
+                        var OutMACList = MACcomp.matchingMAC(WiFi.ListMAC, MAC);
+                        foreach (string OML in OutMACList)
+                        {
+                            Console.WriteLine(OML);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MACexecute = false;
+                        Console.WriteLine("Ошибка MACexecute модуля " + ex);
                     }
                     Console.WriteLine();
                 }

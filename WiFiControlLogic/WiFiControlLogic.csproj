@@ -45,6 +45,7 @@
     <Compile Include="Modules\CMDEthernet.cs" />
     <Compile Include="Modules\CMDping.cs" />
     <Compile Include="Modules\CMDWiFi.cs" />
+    <Compile Include="Modules\MACcomparsion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

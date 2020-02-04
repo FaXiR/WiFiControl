@@ -17,6 +17,11 @@ namespace WiFiControlLogic.Modules
         {
             string result = CMDexecute(@"netstat /e | find ""Байт""");
 
+            if (result.IndexOf("Служба") != -1 && result.IndexOf("не запущена") != -1 || result == "")
+            {
+                throw new NullReferenceException("Пришел необрабатываемый результат: " + result);
+            }
+
             //Позиция в строке
             int index = 0;
 

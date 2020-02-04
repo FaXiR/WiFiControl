@@ -71,9 +71,9 @@ namespace WiFiControlLogic.Modules
         {
             string result = CMDexecute("netsh wlan show hostednetwork");
 
-            if (result.IndexOf("Параметры размещенной сети") == -1)
+            if (result.IndexOf("Служба") != -1 && result.IndexOf("не запущена") != -1 || result == "")
             {
-                throw new NullReferenceException(result);
+                throw new NullReferenceException("Пришел необрабатываемый результат: " + result);
             }
 
             ReceivedWiFiName = null;

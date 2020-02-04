@@ -16,7 +16,7 @@ namespace WiFiControlLogic.Modules
         /// <returns>Ответ консоли</returns>
         protected string CMDexecute(string CMDcommand)
         {
-            ProcessStartInfo psiOpt = new ProcessStartInfo(@"cmd.exe", "/C" + CMDcommand)
+            ProcessStartInfo psiOpt = new ProcessStartInfo(@"cmd.exe", "/C " + CMDcommand)
             {
                 //Задаем параметры запуска как скрытые
                 WindowStyle = ProcessWindowStyle.Hidden,
@@ -29,12 +29,7 @@ namespace WiFiControlLogic.Modules
             StreamReader srIncoming = procCommand.StandardOutput;
             procCommand.WaitForExit();
 
-            string result = srIncoming.ReadToEnd();
-            if (result == "")
-            {
-                throw new NullReferenceException("Пустой ответ, возможно, ошибка в команде: " + CMDcommand);
-            }
-            return result;
+            return srIncoming.ReadToEnd();
         }
 
         /// <summary>

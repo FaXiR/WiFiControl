@@ -27,6 +27,11 @@ namespace WiFiControlLogic.Modules
         {
             string result = CMDexecute("ping " + URL);
 
+            if (result.IndexOf("Служба") != -1 && result.IndexOf("не запущена") != -1 || result == "")
+            {
+                throw new NullReferenceException("Пришел необрабатываемый результат: " + result);
+            }
+
             //Очитска данных
             AvgPing = null;
             Losses = null;

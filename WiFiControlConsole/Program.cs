@@ -11,6 +11,10 @@ namespace WiFiControlConsole
     {
         static void Main(string[] args)
         {
+            bool WiFiExecute = true;
+            bool EthernetExecute = true;
+            bool PingExecute = true;
+
             var WiFi = new CMDWiFi();
             var Ethernet = new CMDEthernet();
             var Ping = new CMDping[]
@@ -19,25 +23,58 @@ namespace WiFiControlConsole
             //    new CMDping("google.com"),
             //    new CMDping("yahoo.com"),
             //    new CMDping("mail.ru"),
-            };                    
+            };
 
             while (true)
             {
-                for (int i = 0; i < Ping.Length; i++)
+                if (PingExecute)
                 {
-                    Ping[i].UpdateInfo();
-                    Ping[i].InfoToConsole();
+                    try
+                    {
+                        for (int i = 0; i < Ping.Length; i++)
+                        {
+                            Ping[i].UpdateInfo();
+                            Ping[i].InfoToConsole();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        PingExecute = false;
+                        Console.WriteLine("Ошибка Ping модуля " + ex);
+                    }
                     Console.WriteLine();
                 }
 
-                Ethernet.UpdateInfo();
-                Ethernet.InfoToConsole();
-                Console.WriteLine();
+                if (EthernetExecute)
+                {
+                    try
+                    {
+                        Ethernet.UpdateInfo();
+                        Ethernet.InfoToConsole();
+                    }
+                    catch (Exception ex)
+                    {
+                        EthernetExecute = false;
+                        Console.WriteLine("Ошибка Ethernet модуля " + ex);                        
+                    }
+                    Console.WriteLine();
+                }
 
-                //WiFi.CMDShowHostedNetwork();
-                WiFi.UpdateInfo();
-                WiFi.InfoToConsole();
-                Console.WriteLine();
+                if (WiFiExecute)
+                {
+                    try
+                    {
+                    //    WiFi.CMDShowHostedNetwork();
+                        WiFi.UpdateInfo();
+                        WiFi.InfoToConsole();
+                    }
+                    catch (Exception ex)
+                    {
+                        WiFiExecute = false;
+                        Console.WriteLine("Ошибка WiFi модуля " + ex);
+                    }
+                    Console.WriteLine();
+                }
 
                 Console.WriteLine("---------------------------");
                 Console.WriteLine();

@@ -18,8 +18,6 @@ namespace WiFiControlConsole
         //Список известных MAC адресов
         static List<string> MAC = new List<String>();
 
-        //Сохранение стандартного цвета консоли
-
         static void Main(string[] args)
         {
             //Задание размеров и названия
@@ -113,15 +111,15 @@ namespace WiFiControlConsole
                 PingExecute = false;
             }
 
-            if (!File.Exists(@"C:\Users\FaXiR\Desktop\MACList.txt"))
-            {
-                Console.WriteLine(@"Файл MACList.txt по пути C:\Users\FaXiR\Desktop не найдет");
-                MACexecute = false;
-            }
-            else
+            try 
             {
                 MAC = File.ReadAllLines(@"C:\Users\FaXiR\Desktop\MACList.txt").ToList();
-                MACexecute = true;
+                MACexecute = true;                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                MACexecute = false;
             }
         }
 

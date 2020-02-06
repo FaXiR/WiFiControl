@@ -13,7 +13,7 @@ namespace WiFiControlLogic.Modules
         /// <param name="MACList">Список подключенных MAC адресов</param>
         /// <param name="MACcompare">Список знакомых MAC адресов и их владельцы (encoding UTF-8)</param>
         /// <returns></returns>
-        public List<string> matchingMAC(List<string> MACList, List<string> MACcompare)
+        public List<string> MatchingMAC(List<string> MACList, List<string> MACcompare)
         {
             // Входящий MACcompare должен иметь вид:
             // *MAC adress 1*

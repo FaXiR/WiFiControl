@@ -5,8 +5,68 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WiFiControlWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="WiFi Control" Height="488.73" Width="400">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
+        <!-- Статус интернет доступа -->
+        <Grid Grid.Column="1" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="170"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Rectangle Fill="AliceBlue"/>
+                <Label Content="Статус интернет доступа" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Grid>
+            <StackPanel Grid.Row="1">
+                <WrapPanel Margin="4">
+                    <Image Height="32" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0"/>
+                    <StackPanel>
+                        <TextBlock TextWrapping="NoWrap" Text="Yandex" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="YandexPing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </WrapPanel>
+                <WrapPanel Margin="4">
+                    <Image Height="32" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0"/>
+                    <StackPanel>
+                        <TextBlock TextWrapping="NoWrap" Text="Google" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="GooglePing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </WrapPanel>
+                <WrapPanel Margin="4">
+                    <Image Height="32" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0"/>
+                    <StackPanel>
+                        <TextBlock TextWrapping="NoWrap" Text="2ip" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="Ip2Ping" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </WrapPanel>
+                <WrapPanel Margin="4">
+                    <Image Height="32" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0"/>
+                    <StackPanel>
+                        <TextBlock TextWrapping="NoWrap" Text="My.ufanet" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="UfanetPing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </WrapPanel>
+            </StackPanel>
+            <Rectangle x:Name="PingColor" Grid.Row="2" Fill="Black"/>
+            <TextBlock x:Name="PingStatus" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Неизвестно" Foreground="White">
+            </TextBlock>
+        </Grid>
+        <!-- Статус WiFi сети -->
+        <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+
+        </Grid>
+        <!-- Управление выключением ПК -->
+        <Grid Grid.Column="1" Grid.Row="1">
+
+        </Grid>
     </Grid>
 </Window>

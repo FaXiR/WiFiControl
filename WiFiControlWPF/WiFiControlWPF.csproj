@@ -94,5 +94,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WiFiControlLogic\WiFiControlLogic.csproj">
+      <Project>{37e53283-5a1f-402d-8c1a-c2196fe2a336}</Project>
+      <Name>WiFiControlLogic</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

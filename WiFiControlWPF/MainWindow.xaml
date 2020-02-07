@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WiFiControlWPF"
         mc:Ignorable="d"
-        Title="WiFi Control" Height="488.73" Width="400" Activated="Window_Activated">
+        Title="WiFi Control" Height="488.73" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>

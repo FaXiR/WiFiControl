@@ -45,8 +45,8 @@ namespace WiFiControlConsole
             {
                 Threads.Add(new Thread(() => CheckPing("Yandex.ru", 0, 0)));
                 Threads.Add(new Thread(() => CheckPing("Google.com", 0, 3)));
-                Threads.Add(new Thread(() => CheckPing("Yahoo.com", 0, 6)));
-                Threads.Add(new Thread(() => CheckPing("Mail.ru", 0, 9)));
+                Threads.Add(new Thread(() => CheckPing("2ip.ru", 0, 6)));
+                Threads.Add(new Thread(() => CheckPing("My.ufanet.ru", 0, 9)));
             }
 
             if (EthernetExecute)

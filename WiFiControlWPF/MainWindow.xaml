@@ -57,7 +57,7 @@
                 </WrapPanel>
             </StackPanel>
             <Rectangle x:Name="PingColor" Grid.Row="2" Fill="Black"/>
-            <TextBlock x:Name="PingStatus" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Неизвестно" Foreground="White">
+            <TextBlock x:Name="PingStatus" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Получение..." Foreground="White">
             </TextBlock>
         </Grid>
         <!-- Статус WiFi сети -->

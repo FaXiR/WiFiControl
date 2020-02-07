@@ -40,6 +40,12 @@ namespace WiFiControlLogic.Modules
             int index = result.IndexOf("потерь)");
             if (index == -1)
             {
+                if (result.IndexOf("При проверке связи не удалось обнаружить узел") != -1);
+                {
+                    Losses = "100%";
+                    AvgPing = null;
+                    return;
+                }
                 throw new NullReferenceException(result);
             }
             while (index > 0)

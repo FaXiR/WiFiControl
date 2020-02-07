@@ -127,6 +127,11 @@ namespace WiFiControlWPF
             }
         }
 
+        /// <summary>
+        /// Выводит состоние сети в WPF
+        /// </summary>
+        /// <param name="title">ТекстБлок из WPF</param>
+        /// <param name="check">Класс CMDPing</param>
         private void CheckPing(TextBlock title, CMDping check)
         {
             while (true)
@@ -140,12 +145,15 @@ namespace WiFiControlWPF
             }
         }
 
+        /// <summary>
+        /// Выводит общий результат CMDPing
+        /// </summary>
+        /// <param name="checks">Классы CMDPing (4 штуки)</param>
         private void ResultOfCheckPing(params CMDping[] checks)
         {
+            Thread.Sleep(5000);
             while (true)
             {
-                Thread.Sleep(2000);
-
                 //Класс CMDPing объявленный как UfanP имеет наивысшее значение. т.к. он доступен даже если интерента нет (В моем случае это так) 
                 bool Y = checks[0].Losses == "100%";
                 bool G = checks[1].Losses == "100%";
@@ -162,14 +170,14 @@ namespace WiFiControlWPF
                         PingStatus.Text = "Полное отсуствие сети";
                     }));
                 }
-                else if (!U && Y && G && I)
+                else if (Y && G && I && !U)
                 {
                     //Если доступен только UfanP
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
                         PingColor.Fill = Brushes.Orange;
                         PingStatus.Foreground = Brushes.Black;
-                        PingStatus.Text = "Частиная доступность";
+                        PingStatus.Text = "Ограниченная доступность";
                     }));
                 }
                 else if (!Y && !G && !I && !U)
@@ -182,6 +190,16 @@ namespace WiFiControlWPF
                         PingStatus.Text = "Полный доступ";
                     }));
                 }
+                else if (!U && (!Y || !G || !I))
+                {
+                    //Если доступен только UfanP и что нибудь другое
+                    this.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        PingColor.Fill = Brushes.Yellow;
+                        PingStatus.Foreground = Brushes.Black;
+                        PingStatus.Text = "Неполный доступн";
+                    }));
+                }
                 else
                 {
                     //Неизвестно...
@@ -192,7 +210,8 @@ namespace WiFiControlWPF
                         PingStatus.Text = "Неизвестно...";
                     }));
                 }
+                    Thread.Sleep(1000);
+                }
             }
         }
     }
-}

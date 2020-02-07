@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace WiFiControlLogic.Modules
 {
@@ -22,7 +23,8 @@ namespace WiFiControlLogic.Modules
                 WindowStyle = ProcessWindowStyle.Hidden,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
-                CreateNoWindow = true
+                CreateNoWindow = true,
+                StandardOutputEncoding = Encoding.GetEncoding(866)
             };
 
             Process procCommand = Process.Start(psiOpt);

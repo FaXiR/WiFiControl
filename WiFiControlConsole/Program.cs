@@ -170,7 +170,7 @@ namespace WiFiControlConsole
                 Console.SetCursorPosition(X, Y + 1);
                 Console.Write($"Статус сети: {check.WiFiStatus}   ");
 
-                List<string> OutMACList = new List<String>();
+                List<string> OutMACList = new List<string>();
                 if (MACexecute)
                 {
                     OutMACList = new MACcomparsion().MatchingMAC(check.ListMAC, MAC);

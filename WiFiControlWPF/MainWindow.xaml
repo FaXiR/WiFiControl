@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WiFiControlWPF"
         mc:Ignorable="d"
-        Title="WiFi Control" Height="488.73" Width="400" Activated="Window_Activated">
+        Title="WiFi Control" Height="488.73" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -28,28 +28,28 @@
             </Grid>
             <StackPanel Grid.Row="1">
                 <WrapPanel Margin="4">
-                    <Image Height="32" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0"/>
+                    <Image Height="28" Width="28" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" Source="Resource/Yandex.jpg"/>
                     <StackPanel>
                         <TextBlock TextWrapping="NoWrap" Text="Yandex" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                         <TextBlock x:Name="YandexPing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                     </StackPanel>
                 </WrapPanel>
                 <WrapPanel Margin="4">
-                    <Image Height="32" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0"/>
+                    <Image Height="28" Width="28" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" Source="Resource/Google.png"/>
                     <StackPanel>
                         <TextBlock TextWrapping="NoWrap" Text="Google" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                         <TextBlock x:Name="GooglePing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                     </StackPanel>
                 </WrapPanel>
                 <WrapPanel Margin="4">
-                    <Image Height="32" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0"/>
+                    <Image Height="28" Width="28" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" Source="Resource/2ip.png"/>
                     <StackPanel>
                         <TextBlock TextWrapping="NoWrap" Text="2ip" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                         <TextBlock x:Name="Ip2Ping" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                     </StackPanel>
                 </WrapPanel>
                 <WrapPanel Margin="4">
-                    <Image Height="32" Width="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0"/>
+                    <Image Height="28" Width="28" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" Source="Resource/Ufanet.png"/>
                     <StackPanel>
                         <TextBlock TextWrapping="NoWrap" Text="My.ufanet" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                         <TextBlock x:Name="UfanetPing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>

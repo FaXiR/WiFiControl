@@ -37,6 +37,9 @@ namespace WiFiControlWPF
 
             //Проверка на работоспособность
             Test();
+
+            //Запуск работы
+            Start();
         }
 
         /// <summary>
@@ -78,7 +81,7 @@ namespace WiFiControlWPF
             }
         }
 
-        private void Window_Activated(object sender, EventArgs e)
+        void Start()
         {
             var YandP = new CMDping("yandex.ru");
             var GoogdP = new CMDping("google.com");
@@ -96,34 +99,24 @@ namespace WiFiControlWPF
                 Threads.Add(new Thread(() => CheckPing(UfanetPing, UfanP)));
                 Threads.Add(new Thread(() => ResultOfCheckPing(YandP, GoogdP, ip2P, UfanP)));
             }
+            else
+            {
+                //Перекритие пинг части
+            }
 
             if (WiFiExecute)
             {
                 //Threads.Add(new Thread(() => CheckWiFi(20, 1)));
-            }
-
-            for (int i = 0; i < Threads.Count; i++)
-            {
-                Threads[i].IsBackground = true;
-                Threads[i].Start();
-            }
-
-            if (WiFiExecute)
-            {
-
             }
             else
             {
                 //Перекрытие WiFi части
             }
 
-            if (PingExecute)
+            foreach (Thread th in Threads)
             {
-
-            }
-            else
-            {
-                //Перекритие пинг части
+                th.IsBackground = true;
+                th.Start();
             }
         }
 
@@ -141,7 +134,7 @@ namespace WiFiControlWPF
                 {
                     title.Text = ($"{check.Losses} / {check.AvgPing}");
                 }));
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
             }
         }
 
@@ -151,7 +144,6 @@ namespace WiFiControlWPF
         /// <param name="checks">Классы CMDPing (4 штуки)</param>
         private void ResultOfCheckPing(params CMDping[] checks)
         {
-            Thread.Sleep(5000);
             while (true)
             {
                 //Класс CMDPing объявленный как UfanP имеет наивысшее значение. т.к. он доступен даже если интерента нет (В моем случае это так) 
@@ -167,17 +159,7 @@ namespace WiFiControlWPF
                     {
                         PingColor.Fill = Brushes.Red;
                         PingStatus.Foreground = Brushes.Black;
-                        PingStatus.Text = "Полное отсуствие сети";
-                    }));
-                }
-                else if (Y && G && I && !U)
-                {
-                    //Если доступен только UfanP
-                    this.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        PingColor.Fill = Brushes.Orange;
-                        PingStatus.Foreground = Brushes.Black;
-                        PingStatus.Text = "Ограниченная доступность";
+                        PingStatus.Text = "Без доступа";
                     }));
                 }
                 else if (!Y && !G && !I && !U)
@@ -197,7 +179,17 @@ namespace WiFiControlWPF
                     {
                         PingColor.Fill = Brushes.Yellow;
                         PingStatus.Foreground = Brushes.Black;
-                        PingStatus.Text = "Неполный доступн";
+                        PingStatus.Text = "Доступ с потерями";
+                    }));
+                }
+                else if (Y && G && I && !U)
+                {
+                    //Если доступен только UfanP
+                    this.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        PingColor.Fill = Brushes.Orange;
+                        PingStatus.Foreground = Brushes.Black;
+                        PingStatus.Text = "Ограниченный доступ";
                     }));
                 }
                 else
@@ -209,9 +201,10 @@ namespace WiFiControlWPF
                         PingStatus.Foreground = Brushes.White;
                         PingStatus.Text = "Неизвестно...";
                     }));
-                }
-                    Thread.Sleep(1000);
-                }
+                };
+
+                Thread.Sleep(1500);
             }
         }
     }
+}

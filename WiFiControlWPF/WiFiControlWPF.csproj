@@ -100,5 +100,11 @@
       <Name>WiFiControlLogic</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\2ip.png" />
+    <Resource Include="Resource\Google.png" />
+    <Resource Include="Resource\Ufanet.png" />
+    <Resource Include="Resource\Yandex.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

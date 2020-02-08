@@ -8,7 +8,7 @@ namespace WiFiControlLogic.Modules
     public class CMDping : CMDbase
     {
         public string URL { get; }
-        public string Losses { private set; get; } = null;
+        public string Losses { private set; get; } = "100%";
         public string AvgPing { private set; get; } = null;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace WiFiControlLogic.Modules
             int index = result.IndexOf("потерь)");
             if (index == -1)
             {
-                if (result.IndexOf("При проверке связи не удалось обнаружить узел") != -1);
+                if (result.IndexOf("При проверке связи не удалось обнаружить узел") != -1)
                 {
                     Losses = "100%";
                     AvgPing = null;

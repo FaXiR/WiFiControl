@@ -28,7 +28,17 @@ namespace WiFiControlWPF
         static bool PingExecute;
         static bool MACexecute;
 
-        //Список известных MAC адресов
+        //Запись классов
+        readonly CMDping YandP = new CMDping("yandex.ru");
+        readonly CMDping GoogdP = new CMDping("google.com");
+        readonly CMDping ip2P = new CMDping("2ip.ru");
+        readonly CMDping UfanP = new CMDping("My.ufanet.ru");
+
+        readonly CMDWiFi WiFi = new CMDWiFi();
+
+        /// <summary>
+        /// Список известных MAC адресов
+        /// </summary>
         static List<string> MAC = new List<String>();
 
         public MainWindow()
@@ -38,7 +48,7 @@ namespace WiFiControlWPF
             //Проверка на работоспособность
             Test();
 
-            //Запуск работы
+            //Запуск основной части приложения
             Start();
         }
 
@@ -81,23 +91,19 @@ namespace WiFiControlWPF
             }
         }
 
+        /// <summary>
+        /// Создание и запуск основных потоков
+        /// </summary>
         void Start()
-        {
-            var YandP = new CMDping("yandex.ru");
-            var GoogdP = new CMDping("google.com");
-            var ip2P = new CMDping("2ip.ru");
-            var UfanP = new CMDping("My.ufanet.ru");
-
-            //Создание потоков            
+        {        
             var Threads = new List<Thread>();
 
             if (PingExecute)
             {
-                Threads.Add(new Thread(() => CheckPing(YandexPing, YandP)));
-                Threads.Add(new Thread(() => CheckPing(GooglePing, GoogdP)));
-                Threads.Add(new Thread(() => CheckPing(Ip2Ping, ip2P)));
-                Threads.Add(new Thread(() => CheckPing(UfanetPing, UfanP)));
-                Threads.Add(new Thread(() => ResultOfCheckPing(YandP, GoogdP, ip2P, UfanP)));
+                Threads.Add(new Thread(() => CheckPing(YandP)));
+                Threads.Add(new Thread(() => CheckPing(GoogdP)));
+                Threads.Add(new Thread(() => CheckPing(ip2P)));
+                Threads.Add(new Thread(() => CheckPing(UfanP)));
             }
             else
             {
@@ -106,11 +112,20 @@ namespace WiFiControlWPF
 
             if (WiFiExecute)
             {
-                //Threads.Add(new Thread(() => CheckWiFi(20, 1)));
+                Threads.Add(new Thread(CheckWiFi));
             }
             else
             {
                 //Перекрытие WiFi части
+            }
+
+            if (PingExecute || WiFiExecute)
+            {
+                Threads.Add(new Thread(ResultOfUI));
+            }
+            else
+            {
+                //Ничего?
             }
 
             foreach (Thread th in Threads)
@@ -121,19 +136,26 @@ namespace WiFiControlWPF
         }
 
         /// <summary>
-        /// Выводит состоние сети в WPF
+        /// Обновляет данные в CMDping классе
         /// </summary>
-        /// <param name="title">ТекстБлок из WPF</param>
-        /// <param name="check">Класс CMDPing</param>
-        private void CheckPing(TextBlock title, CMDping check)
+        /// <param name="Ping">Класс CMDPing</param>
+        private void CheckPing(CMDping cls)
         {
             while (true)
             {
-                check.UpdateInfo();
-                this.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    title.Text = ($"{check.Losses} / {check.AvgPing}");
-                }));
+                cls.UpdateInfo();
+                Thread.Sleep(2000);
+            }
+        }
+
+        /// <summary>
+        /// Обновляет данные в CMDWiFi классе
+        /// </summary>
+        private void CheckWiFi()
+        {
+            while (true)
+            {
+                WiFi.UpdateInfo();
                 Thread.Sleep(2000);
             }
         }
@@ -141,69 +163,106 @@ namespace WiFiControlWPF
         /// <summary>
         /// Выводит общий результат CMDPing
         /// </summary>
-        /// <param name="checks">Классы CMDPing (4 штуки)</param>
-        private void ResultOfCheckPing(params CMDping[] checks)
+        private void ResultOfUI()
         {
+            Thread.Sleep(1000);
             while (true)
             {
-                //Класс CMDPing объявленный как UfanP имеет наивысшее значение. т.к. он доступен даже если интерента нет (В моем случае это так) 
-                bool Y = checks[0].Losses == "100%";
-                bool G = checks[1].Losses == "100%";
-                bool I = checks[2].Losses == "100%";
-                bool U = checks[3].Losses == "100%";
+                if (PingExecute)
+                {
+                    //Вывод состояния каждого адреса
+                    this.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        YandexPing.Text = ($"{YandP.Losses} / {YandP.AvgPing}");
+                        GooglePing.Text = ($"{GoogdP.Losses} / {GoogdP.AvgPing}");
+                        Ip2Ping.Text = ($"{ip2P.Losses} / {ip2P.AvgPing}");
+                        UfanetPing.Text = ($"{UfanP.Losses} / {UfanP.AvgPing}");
+                    }));
 
-                if (Y && G && I && U)
-                {
-                    //Если все недоступно
-                    this.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        PingColor.Fill = Brushes.Red;
-                        PingStatus.Foreground = Brushes.Black;
-                        PingStatus.Text = "Без доступа";
-                    }));
-                }
-                else if (!Y && !G && !I && !U)
-                {
-                    //Если доступно все
-                    this.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        PingColor.Fill = Brushes.LightGreen;
-                        PingStatus.Foreground = Brushes.Black;
-                        PingStatus.Text = "Полный доступ";
-                    }));
-                }
-                else if (!U && (!Y || !G || !I))
-                {
-                    //Если доступен только UfanP и что нибудь другое
-                    this.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        PingColor.Fill = Brushes.Yellow;
-                        PingStatus.Foreground = Brushes.Black;
-                        PingStatus.Text = "Доступ с потерями";
-                    }));
-                }
-                else if (Y && G && I && !U)
-                {
-                    //Если доступен только UfanP
-                    this.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        PingColor.Fill = Brushes.Orange;
-                        PingStatus.Foreground = Brushes.Black;
-                        PingStatus.Text = "Ограниченный доступ";
-                    }));
-                }
-                else
-                {
-                    //Неизвестно...
-                    this.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        PingColor.Fill = Brushes.Black;
-                        PingStatus.Foreground = Brushes.White;
-                        PingStatus.Text = "Неизвестно...";
-                    }));
-                };
+                    //Задание данных для статуса
+                    bool Y = YandP.Losses == "100%";
+                    bool G = GoogdP.Losses == "100%";
+                    bool I = ip2P.Losses == "100%";
+                    bool U = UfanP.Losses == "100%";
 
-                Thread.Sleep(1500);
+                    //Вывод статуса
+                    if (Y && G && I && U)
+                    {
+                        //Если все недоступно
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            PingColor.Fill = Brushes.Red;
+                            PingStatus.Foreground = Brushes.Black;
+                            PingStatus.Text = "Без доступа";
+                        }));
+                    }
+                    else if (!Y && !G && !I && !U)
+                    {
+                        //Если доступно все
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            PingColor.Fill = Brushes.LightGreen;
+                            PingStatus.Foreground = Brushes.Black;
+                            PingStatus.Text = "Полный доступ";
+                        }));
+                    }
+                    else if (!U && (!Y || !G || !I))
+                    {
+                        //Если доступен только UfanP и что нибудь другое
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            PingColor.Fill = Brushes.Yellow;
+                            PingStatus.Foreground = Brushes.Black;
+                            PingStatus.Text = "Доступ с потерями";
+                        }));
+                    }
+                    else if (Y && G && I && !U)
+                    {
+                        //Если доступен только UfanP
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            PingColor.Fill = Brushes.Orange;
+                            PingStatus.Foreground = Brushes.Black;
+                            PingStatus.Text = "Ограниченный доступ";
+                        }));
+                    }
+                    else
+                    {
+                        //Неизвестно...
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            PingColor.Fill = Brushes.Black;
+                            PingStatus.Foreground = Brushes.White;
+                            PingStatus.Text = "Неизвестно...";
+                        }));
+                    };
+                }
+
+                if (false) //(WiFiExecute)
+                {
+                    //TODO: доделать
+
+                    Console.Write($"Название сети: {WiFi.ReceivedWiFiName}   ");
+                    Console.Write($"Статус сети: {WiFi.WiFiStatus}   ");
+
+                    List<string> OutMACList = new List<string>();
+                    if (MACexecute)
+                    {
+                        OutMACList = new MACcomparsion().MatchingMAC(WiFi.ListMAC, MAC);
+                    }
+                    else
+                    {
+                        OutMACList = WiFi.ListMAC;
+                    }
+
+                    Console.Write($"Список подключеных пользователей:");
+                    for (int i = 4; i < OutMACList.Count + 4; i++)
+                    {
+                        Console.Write(OutMACList[i - 4] + "   ");
+                    }
+                }
+         
+                Thread.Sleep(1000);
             }
         }
     }

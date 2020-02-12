@@ -5,68 +5,224 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WiFiControlWPF"
         mc:Ignorable="d"
-        Title="WiFi Control" Height="488.73" Width="400">
+        Title="WiFi Control" Height="397" Width="451">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="137*"/>
+            <RowDefinition Height="46*"/>
+            <RowDefinition Height="173*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="221*"/>
+            <ColumnDefinition Width="222*"/>
         </Grid.ColumnDefinitions>
-        <!-- Статус интернет доступа -->
-        <Grid Grid.Column="1" Grid.Row="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="170"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
-                <Rectangle Fill="AliceBlue"/>
-                <Label Content="Статус интернет доступа" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        
+        <!--Состояние WiFi-->        
+        <Grid Grid.Column="0" Grid.Row="0" Margin="4" Grid.RowSpan="2">
+            <GroupBox Header="Статус WiFi" FontSize="18" FontWeight="SemiBold" TextOptions.TextFormattingMode="Display">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="8"/>
+                    </Grid.RowDefinitions>
+                    <ProgressBar x:Name="W_WiFiStatus" HorizontalAlignment="Left" Width="20" Orientation="Vertical" Margin="8,0,0,0" Grid.Row="1" Grid.RowSpan="4" Maximum="4" Value="2" Foreground="#FF002EFF" >
+                        <ProgressBar.Background>
+                            <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
+                                <GradientStop Color="#4CBABABA" Offset="0"/>
+                                <GradientStop Color="#4CC7C7C7" Offset="0.5"/>
+                                <GradientStop Color="#4CBABABA" Offset="1"/>
+                            </LinearGradientBrush>
+                        </ProgressBar.Background>
+                    </ProgressBar>
+                    <TextBlock Text="- Включено" Grid.Row="1" VerticalAlignment="Center" Margin="35,0,0,0" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display"/>
+                    <TextBlock Text="- Перезапускается" Grid.Row="2" VerticalAlignment="Center" Margin="35,0,0,0" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display"/>
+                    <TextBlock Text="- Выключено" Grid.Row="3" VerticalAlignment="Center" Margin="35,0,0,0" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display"/>
+                    <TextBlock Text="- Неизвестно" Grid.Row="4" VerticalAlignment="Center" Margin="35,0,0,0" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        
+        <!--Панель включения, выключения, перезагрузки-->
+        <Grid Grid.Column="0" Grid.Row="2" Margin="4">
+            <GroupBox Header="Управление WiFi" FontSize="18" FontWeight="SemiBold" Padding="8" TextOptions.TextFormattingMode="Display" VerticalAlignment="Top">
+                <StackPanel Margin="0">
+                    <Button Content="Включить" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display" Margin="0,0,0,4" BorderBrush="#66707070" Click="WiFi_Enable">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                        <RotateTransform Angle="150" CenterY="0.5" CenterX="0.5"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                                <GradientStop Color="#FFEBEBEB" Offset="0.636"/>
+                                <GradientStop Color="#FFCAD3FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+                    <Button Content="Перезапустить" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display" BorderBrush="#66707070" Margin="0,0,0,4" Click="WiFi_Restart">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                        <RotateTransform Angle="150" CenterY="0.5" CenterX="0.5"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                                <GradientStop Color="#FFEBEBEB" Offset="0.636"/>
+                                <GradientStop Color="#FFCAD3FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+                    <Button Content="Выключить" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display" Margin="0" BorderBrush="#66707070" Click="WiFI_Disable">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                        <RotateTransform Angle="150" CenterY="0.5" CenterX="0.5"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                                <GradientStop Color="#FFEBEBEB" Offset="0.636"/>
+                                <GradientStop Color="#FFCAD3FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+                </StackPanel>
+            </GroupBox>
+            <Expander x:Name="W_WiFiUserCount" Header="Подключения к сети" VerticalAlignment="Bottom" BorderBrush="{x:Null}" UseLayoutRounding="False" BorderThickness="0" ExpandDirection="Up" MouseEnter="Expander_MouseEnter" MouseLeave="Expander_MouseLeave">
+                <Expander.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform Angle="150" CenterY="0.5" CenterX="0.5"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                        <GradientStop Color="#FFEBEBEB" Offset="0.636"/>
+                        <GradientStop Color="#FFCAD3FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Expander.Background>
+                <GroupBox BorderBrush="#FFD5DFE5">
+                    <StackPanel x:Name="W_WiFiMacList">
+                        <!-- заполняется из кода -->
+                    </StackPanel>
+                </GroupBox>
+            </Expander>
+        </Grid>
+        
+        <!--Панель сведений о WiFi-->
+        <Grid Grid.Column="1" Grid.Row="0" Margin="4">
+            <GroupBox Header="Сведенья о WiFi" FontSize="18" FontWeight="SemiBold" Padding="8" TextOptions.TextFormattingMode="Display" VerticalAlignment="Top">
+                <StackPanel Margin="0">
+                    <TextBlock x:Name="W_WiFiName" Text="Название:" FontSize="16" FontWeight="Normal" Margin="0,0,0,4" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="W_WiFiPassword" HorizontalAlignment="Left" Text="Пароль:" FontSize="16" FontWeight="Normal" Margin="0,0,0,8"/>
+                    <Button Content="Изменить" FontSize="16" FontWeight="Normal" Margin="0" Click="WiFi_Change">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                        <RotateTransform Angle="150" CenterY="0.5" CenterX="0.5"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                                <GradientStop Color="#FFEBEBEB" Offset="0.636"/>
+                                <GradientStop Color="#FFCAD3FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+
+        <!-- Перекрытие WiFi части-->
+        <Grid x:Name="WiFiClose0" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Visibility="Hidden">
+            <Grid>
+                <Rectangle>
+                    <Rectangle.Fill>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <LinearGradientBrush.RelativeTransform>
+                                <TransformGroup>
+                                    <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                    <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                    <RotateTransform Angle="135" CenterY="0.5" CenterX="0.5"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </LinearGradientBrush.RelativeTransform>
+                            <GradientStop Color="#F2FFFFFF" Offset="0"/>
+                            <GradientStop Color="#F2CAD3FF" Offset="1"/>
+                            <GradientStop Color="#F2FFFFFF" Offset="0.498"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <TextBlock Text="Служба автонастройки беспроводной сети (Wlansvc) не запущена." Width="180" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" TextWrapping="Wrap" />
             </Grid>
-            <StackPanel Grid.Row="1">
-                <WrapPanel Margin="4">
-                    <Image Height="28" Width="28" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" Source="Resource/Yandex.jpg"/>
-                    <StackPanel>
-                        <TextBlock TextWrapping="NoWrap" Text="Yandex" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="YandexPing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                </WrapPanel>
-                <WrapPanel Margin="4">
-                    <Image Height="28" Width="28" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" Source="Resource/Google.png"/>
-                    <StackPanel>
-                        <TextBlock TextWrapping="NoWrap" Text="Google" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="GooglePing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                </WrapPanel>
-                <WrapPanel Margin="4">
-                    <Image Height="28" Width="28" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" Source="Resource/2ip.png"/>
-                    <StackPanel>
-                        <TextBlock TextWrapping="NoWrap" Text="2ip" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="Ip2Ping" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                </WrapPanel>
-                <WrapPanel Margin="4">
-                    <Image Height="28" Width="28" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" Source="Resource/Ufanet.png"/>
-                    <StackPanel>
-                        <TextBlock TextWrapping="NoWrap" Text="My.ufanet" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="UfanetPing" TextWrapping="NoWrap" Text="---% / --- мсек" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                </WrapPanel>
-            </StackPanel>
-            <Rectangle x:Name="PingColor" Grid.Row="2" Fill="Black"/>
-            <TextBlock x:Name="PingStatus" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Получение..." Foreground="White">
-            </TextBlock>
         </Grid>
-        <!-- Статус WiFi сети -->
-        <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
-
+        <Grid x:Name="WiFiClose1" Grid.Row="2" Grid.Column="0" Visibility="Hidden">
+            <Rectangle Fill="#F2FFFFFF" />
         </Grid>
-        <!-- Управление выключением ПК -->
-        <Grid Grid.Column="1" Grid.Row="1">
+        <Grid x:Name="WiFiClose2" Grid.Row="0" Grid.Column="1" Visibility="Hidden">
+            <Rectangle Fill="#F2FFFFFF" />
+        </Grid>
 
+        <!--Панель сведений о состоянии интернета-->
+        <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="4">
+            <Expander x:Name="W_PingStatus" Header="Получение..." VerticalAlignment="Bottom" BorderBrush="{x:Null}" UseLayoutRounding="False" BorderThickness="0" ExpandDirection="Up" MouseEnter="Expander_MouseEnter" MouseLeave="Expander_MouseLeave">
+                <Expander.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                <RotateTransform Angle="150" CenterY="0.5" CenterX="0.5"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                        <GradientStop Color="#FFEBEBEB" Offset="0.636"/>
+                        <GradientStop Color="#FFCAD3FF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Expander.Background>
+                <GroupBox BorderBrush="#FFD5DFE5">
+                    <StackPanel>
+                        <StackPanel>
+                            <Label Content="Yandex.ru"/>
+                            <Label Content="" x:Name="W_Yand" Margin="4,-5,0,4"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <Label Content="Google.com"/>
+                            <Label Content="" x:Name="W_Goog" Margin="4,-5,0,4"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <Label Content="2ip.ru"/>
+                            <Label Content="" x:Name="W_2ip" Margin="4,-5,0,4"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <Label Content="My.ufanet.ru" />
+                            <Label Content="" x:Name="W_Ufan" Margin="4,-5,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </Expander>
         </Grid>
     </Grid>
 </Window>

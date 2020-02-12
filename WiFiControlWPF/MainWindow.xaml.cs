@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using WiFiControlLogic.Modules;
 using System.Threading;
 using System.IO;
+using WiFiControlWPF.DialogBox;
 
 namespace WiFiControlWPF
 {
@@ -27,13 +28,14 @@ namespace WiFiControlWPF
         static bool WiFiExecute;
         static bool PingExecute;
         static bool MACexecute;
+        static bool WiFiRestart = false;
+        static bool WiFiButtonBlock = false;
 
-        //Запись классов
+        //Объявление классов
         readonly CMDping YandP = new CMDping("yandex.ru");
         readonly CMDping GoogdP = new CMDping("google.com");
         readonly CMDping ip2P = new CMDping("2ip.ru");
         readonly CMDping UfanP = new CMDping("My.ufanet.ru");
-
         readonly CMDWiFi WiFi = new CMDWiFi();
 
         /// <summary>
@@ -41,53 +43,104 @@ namespace WiFiControlWPF
         /// </summary>
         static List<string> MAC = new List<String>();
 
+        /// <summary>
+        /// Пароль от WiFi ctnb
+        /// </summary>
+        static string WiFiPassword;
+
         public MainWindow()
         {
             InitializeComponent();
-
             //Проверка на работоспособность
             Test();
-
+            //Возможность использования Binding
+            this.DataContext = this;
             //Запуск основной части приложения
             Start();
         }
 
         /// <summary>
-        /// Проверка работоспособности CMD комманд ping, netsh и задает известные MAC адреса
+        /// Запускает тестирование разных CMD комманд в разных потоках
         /// </summary>
         void Test()
         {
-            try
-            {
-                new CMDWiFi().UpdateInfo();
-                WiFiExecute = true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                WiFiExecute = false;
-            }
+            new Thread(TestPing).Start();
+            new Thread(TestWiFi).Start();
+        }
 
+        /// <summary>
+        /// Проверка работоспособности CMD комманд ping
+        /// </summary>
+        void TestPing()
+        {
             try
             {
                 new CMDping("-n 1 localhost").UpdateInfo();
                 PingExecute = true;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
                 PingExecute = false;
+
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    W_PingStatus.Content = "Получить невозможно";
+                }));
+
+            }
+        }
+
+        /// <summary>
+        /// Проверка работоспособности CMD комманд netsh wlan, задает известные MAC адреса и пароль из текстового файла
+        /// </summary>
+        void TestWiFi()
+        {
+            Visibility Hidding;
+
+            try
+            {
+                new CMDWiFi().UpdateInfo();
+                WiFiExecute = true;
+                Hidding = Visibility.Hidden;
+            }
+            catch
+            {
+                WiFiExecute = false;
+                Hidding = Visibility.Visible;
+            }
+
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                WiFiClose0.Visibility = Hidding;
+                WiFiClose1.Visibility = Hidding;
+                WiFiClose2.Visibility = Hidding;
+            }));
+
+            //Преждевременное завершение, если WiFi не прошел тест
+            if (!WiFiExecute)
+            {
+                MACexecute = false;
+                return;
             }
 
             try
             {
-                MAC = File.ReadAllLines(@"C:\Users\FaXiR\Desktop\MACList.txt").ToList();
+                MAC = File.ReadAllLines(@"MACList.txt").ToList();
                 MACexecute = true;
+                WiFiPassword = null;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex);
                 MACexecute = false;
+            }
+
+            try
+            {
+                WiFiPassword = File.ReadLines(@"Password.txt").First();
+            }
+            catch
+            {
+                WiFiPassword = null;
             }
         }
 
@@ -95,38 +148,15 @@ namespace WiFiControlWPF
         /// Создание и запуск основных потоков
         /// </summary>
         void Start()
-        {        
+        {
             var Threads = new List<Thread>();
 
-            if (PingExecute)
-            {
-                Threads.Add(new Thread(() => CheckPing(YandP)));
-                Threads.Add(new Thread(() => CheckPing(GoogdP)));
-                Threads.Add(new Thread(() => CheckPing(ip2P)));
-                Threads.Add(new Thread(() => CheckPing(UfanP)));
-            }
-            else
-            {
-                //Перекритие пинг части
-            }
-
-            if (WiFiExecute)
-            {
-                Threads.Add(new Thread(CheckWiFi));
-            }
-            else
-            {
-                //Перекрытие WiFi части
-            }
-
-            if (PingExecute || WiFiExecute)
-            {
-                Threads.Add(new Thread(ResultOfUI));
-            }
-            else
-            {
-                //Ничего?
-            }
+            Threads.Add(new Thread(() => CheckPing(YandP)));
+            Threads.Add(new Thread(() => CheckPing(GoogdP)));
+            Threads.Add(new Thread(() => CheckPing(ip2P)));
+            Threads.Add(new Thread(() => CheckPing(UfanP)));
+            Threads.Add(new Thread(CheckWiFi));
+            Threads.Add(new Thread(ResultOfUI));
 
             foreach (Thread th in Threads)
             {
@@ -141,9 +171,23 @@ namespace WiFiControlWPF
         /// <param name="Ping">Класс CMDPing</param>
         private void CheckPing(CMDping cls)
         {
+            int attemp = 100;
             while (true)
             {
-                cls.UpdateInfo();
+                if (WiFiExecute)
+                {
+                    while (true)
+                    {
+                        cls.UpdateInfo();
+                        WiFiRestart = false;
+                        Thread.Sleep(2000);
+                    }
+                }
+                attemp--;
+                if (attemp == 0)
+                {
+                    return;
+                }
                 Thread.Sleep(2000);
             }
         }
@@ -153,9 +197,22 @@ namespace WiFiControlWPF
         /// </summary>
         private void CheckWiFi()
         {
+            int attemp = 100;
             while (true)
             {
-                WiFi.UpdateInfo();
+                if (WiFiExecute)
+                {
+                    while (true)
+                    {
+                        WiFi.UpdateInfo();
+                        Thread.Sleep(2000);
+                    }
+                }
+                attemp--;
+                if (attemp == 0)
+                {
+                    return;
+                }
                 Thread.Sleep(2000);
             }
         }
@@ -173,10 +230,10 @@ namespace WiFiControlWPF
                     //Вывод состояния каждого адреса
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        YandexPing.Text = ($"{YandP.Losses} / {YandP.AvgPing}");
-                        GooglePing.Text = ($"{GoogdP.Losses} / {GoogdP.AvgPing}");
-                        Ip2Ping.Text = ($"{ip2P.Losses} / {ip2P.AvgPing}");
-                        UfanetPing.Text = ($"{UfanP.Losses} / {UfanP.AvgPing}");
+                        W_Yand.Content = ($"{YandP.Losses} / {YandP.AvgPing}");
+                        W_Goog.Content = ($"{GoogdP.Losses} / {GoogdP.AvgPing}");
+                        W_2ip.Content = ($"{ip2P.Losses} / {ip2P.AvgPing}");
+                        W_Ufan.Content = ($"{UfanP.Losses} / {UfanP.AvgPing}");
                     }));
 
                     //Задание данных для статуса
@@ -191,9 +248,7 @@ namespace WiFiControlWPF
                         //Если все недоступно
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            PingColor.Fill = Brushes.Red;
-                            PingStatus.Foreground = Brushes.Black;
-                            PingStatus.Text = "Без доступа";
+                            W_PingStatus.Header = "Проблемы с кабелем";
                         }));
                     }
                     else if (!Y && !G && !I && !U)
@@ -201,9 +256,7 @@ namespace WiFiControlWPF
                         //Если доступно все
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            PingColor.Fill = Brushes.LightGreen;
-                            PingStatus.Foreground = Brushes.Black;
-                            PingStatus.Text = "Полный доступ";
+                            W_PingStatus.Header = "Полный интернет доступ";
                         }));
                     }
                     else if (!U && (!Y || !G || !I))
@@ -211,19 +264,16 @@ namespace WiFiControlWPF
                         //Если доступен только UfanP и что нибудь другое
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            PingColor.Fill = Brushes.Yellow;
-                            PingStatus.Foreground = Brushes.Black;
-                            PingStatus.Text = "Доступ с потерями";
+                            W_PingStatus.Header = "Требуется подключение";
                         }));
+
                     }
                     else if (Y && G && I && !U)
                     {
                         //Если доступен только UfanP
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            PingColor.Fill = Brushes.Orange;
-                            PingStatus.Foreground = Brushes.Black;
-                            PingStatus.Text = "Ограниченный доступ";
+                            W_PingStatus.Header = "Требуется оплата";
                         }));
                     }
                     else
@@ -231,39 +281,199 @@ namespace WiFiControlWPF
                         //Неизвестно...
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            PingColor.Fill = Brushes.Black;
-                            PingStatus.Foreground = Brushes.White;
-                            PingStatus.Text = "Неизвестно...";
+                            W_PingStatus.Header = "Неизвестно";
                         }));
                     };
                 }
 
-                if (false) //(WiFiExecute)
+                if (WiFiExecute)
                 {
-                    //TODO: доделать
-
-                    Console.Write($"Название сети: {WiFi.ReceivedWiFiName}   ");
-                    Console.Write($"Статус сети: {WiFi.WiFiStatus}   ");
-
-                    List<string> OutMACList = new List<string>();
-                    if (MACexecute)
+                    this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        OutMACList = new MACcomparsion().MatchingMAC(WiFi.ListMAC, MAC);
-                    }
-                    else
-                    {
-                        OutMACList = WiFi.ListMAC;
-                    }
+                        W_WiFiMacList.Children.Clear();
 
-                    Console.Write($"Список подключеных пользователей:");
-                    for (int i = 4; i < OutMACList.Count + 4; i++)
-                    {
-                        Console.Write(OutMACList[i - 4] + "   ");
-                    }
+                        if (WiFiRestart)
+                        {
+                            W_WiFiStatus.Value = 3;
+                            W_WiFiUserCount.Header = "Подключения к сети";
+                        }
+                        else
+                        {
+                            switch (WiFi.WiFiStatus)
+                            {
+                                case "Запущено":
+                                    W_WiFiStatus.Value = 4;
+                                    break;
+                                case "Выключено":
+                                    W_WiFiStatus.Value = 2;
+                                    break;
+                                default: //Неизвестно
+                                    W_WiFiStatus.Value = 1;
+                                    break;
+                            }
+
+                            W_WiFiName.Text = $"Название: {WiFi.ReceivedWiFiName}";
+                            W_WiFiPassword.Text = $"Пароль: {WiFiPassword}";
+
+                            if (WiFi.ListMAC.Count == 0)
+                            {
+                                W_WiFiUserCount.Header = "Подключения к сети";
+                            }
+                            else
+                            {
+                                W_WiFiUserCount.Header = $"Подключения к сети ({WiFi.ListMAC.Count})";
+                            }
+
+                            List<string> OutMACList = new List<string>();
+                            if (MACexecute)
+                            {
+                                OutMACList = new MACcomparsion().MatchingMAC(WiFi.ListMAC, MAC);
+                            }
+                            else
+                            {
+                                OutMACList = WiFi.ListMAC;
+                            }
+
+                            foreach (string mac in OutMACList)
+                            {
+                                // Create a button.
+                                TextBlock ad = new TextBlock()
+                                {
+                                    Text = mac,
+                                    Margin = new Thickness(4)
+                                };
+                                // Add created button to a previously created container.
+                                W_WiFiMacList.Children.Add(ad);
+                            }
+                        }
+                    }));
                 }
-         
                 Thread.Sleep(1000);
             }
+        }
+
+        private void Expander_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (((Expander)e.OriginalSource).Header.ToString() == "Подключения к сети")
+            {
+                return;
+            }
+            ((Expander)e.OriginalSource).IsExpanded = true;
+        }
+
+        private void Expander_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Expander)e.OriginalSource).IsExpanded = false;
+        }
+
+        private void WiFi_Enable(object sender, RoutedEventArgs e)
+        {
+            if (WiFiButtonBlock || WiFiRestart)
+            {
+                return;
+            }
+
+            Thread thread = new Thread(() => WiFi_act(1));
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        private void WiFI_Disable(object sender, RoutedEventArgs e)
+        {
+            if (WiFiButtonBlock || WiFiRestart)
+            {
+                return;
+            }
+
+            Thread thread = new Thread(() => WiFi_act(3));
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        private void WiFi_Restart(object sender, RoutedEventArgs e)
+        {
+            if (WiFiButtonBlock || WiFiRestart)
+            {
+                return;
+            }
+
+            Thread thread = new Thread(() => WiFi_act(2));
+            thread.IsBackground = true;
+            thread.Start();
+        }
+
+        /// <summary>
+        /// Включает, перезагружает или выключает WiFi в зависимости от числа
+        /// </summary>
+        /// <param name="act">1 - Вкл. 2 - Перезагрузка. 3 - Выкл.</param>
+        void WiFi_act(int act)
+        {
+            WiFiButtonBlock = true;
+
+            if (WiFiExecute)
+            {
+                switch (act)
+                {
+                    case 1:
+                        WiFi.EnabledWiFi();
+                        break;
+                    case 2:
+                        WiFi.RestartWiFi();
+                        WiFiRestart = true;
+                        break;
+                    case 3:
+                        WiFi.DisabledWiFi();
+                        break;
+                }
+            }
+            WiFiButtonBlock = false;
+        }
+
+        private void WiFi_Change(object sender, RoutedEventArgs e)
+        {
+            string TempLogin = null;
+            string TempPassword = null;
+
+            if (WiFiButtonBlock || WiFiRestart)
+            {
+                return;
+            }
+
+            SetLoginPassword Dialog = new SetLoginPassword();
+
+            Dialog.Login = WiFi.ReceivedWiFiName;
+            Dialog.Password = WiFiPassword;
+
+            if (Dialog.ShowDialog() == true)
+            {
+                TempLogin = Dialog.Login;
+                TempPassword = Dialog.Password;
+            }
+            else
+            {
+                MessageBox.Show("Запись была отменена");
+                return;
+            }
+
+            try
+            {
+                WiFi.CMDSetNamePassword(TempLogin, TempPassword);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return;
+            }
+
+            //Перезапуск WiFi
+            Thread thread = new Thread(() => WiFi_act(2));
+            thread.IsBackground = true;
+            thread.Start();
+
+            //Сохранение нового пароля
+            File.WriteAllText(@"Password.txt", TempPassword);
+            WiFiPassword = TempPassword;
+
         }
     }
 }

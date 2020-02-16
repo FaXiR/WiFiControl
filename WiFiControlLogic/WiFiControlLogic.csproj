@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Modules\CMDbase.cs" />
+    <Compile Include="Modules\CMDCommand.cs" />
     <Compile Include="Modules\CMDEthernet.cs" />
     <Compile Include="Modules\CMDping.cs" />
     <Compile Include="Modules\CMDWiFi.cs" />

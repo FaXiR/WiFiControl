@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WiFiControlWPF"
         mc:Ignorable="d"
-        Title="WiFi Control" Height="397" Width="451">
+        Title="WiFi Control" Height="397" Width="451" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="137*"/>
@@ -16,8 +16,8 @@
             <ColumnDefinition Width="221*"/>
             <ColumnDefinition Width="222*"/>
         </Grid.ColumnDefinitions>
-        
-        <!--Состояние WiFi-->        
+
+        <!--Состояние WiFi-->
         <Grid Grid.Column="0" Grid.Row="0" Margin="4" Grid.RowSpan="2">
             <GroupBox Header="Статус WiFi" FontSize="18" FontWeight="SemiBold" TextOptions.TextFormattingMode="Display">
                 <Grid>
@@ -45,7 +45,7 @@
                 </Grid>
             </GroupBox>
         </Grid>
-        
+
         <!--Панель включения, выключения, перезагрузки-->
         <Grid Grid.Column="0" Grid.Row="2" Margin="4">
             <GroupBox Header="Управление WiFi" FontSize="18" FontWeight="SemiBold" Padding="8" TextOptions.TextFormattingMode="Display" VerticalAlignment="Top">
@@ -126,7 +126,7 @@
                 </GroupBox>
             </Expander>
         </Grid>
-        
+
         <!--Панель сведений о WiFi-->
         <Grid Grid.Column="1" Grid.Row="0" Margin="4">
             <GroupBox Header="Сведенья о WiFi" FontSize="18" FontWeight="SemiBold" Padding="8" TextOptions.TextFormattingMode="Display" VerticalAlignment="Top">
@@ -184,6 +184,33 @@
             <Rectangle Fill="#F2FFFFFF" />
         </Grid>
 
+        <!--Панель выключения ПК-->
+        <Grid Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Margin="4,0,4,33">
+            <GroupBox Header="Выключение ПК" FontSize="18" FontWeight="SemiBold" Padding="8" TextOptions.TextFormattingMode="Display">
+                <StackPanel>
+                    <TextBlock IsEnabled="False" Text="00:00:00" FontSize="50" FontWeight="Normal" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <Button IsEnabled="False" Content="Добавить 15 минут" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display" Margin="0,0,0,18" BorderBrush="#66707070" Click="Add15Minutes">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                <LinearGradientBrush.RelativeTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                        <RotateTransform Angle="150" CenterY="0.5" CenterX="0.5"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </LinearGradientBrush.RelativeTransform>
+                                <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                                <GradientStop Color="#FFEBEBEB" Offset="0.636"/>
+                                <GradientStop Color="#FFCAD3FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                    </Button>
+                    <CheckBox IsChecked="False" x:Name="CheckUserForDisablePC" Content="Если нет подключений" FontSize="16" FontWeight="Normal" TextOptions.TextFormattingMode="Display"/>
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+
         <!--Панель сведений о состоянии интернета-->
         <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="4">
             <Expander x:Name="W_PingStatus" Header="Получение..." VerticalAlignment="Bottom" BorderBrush="{x:Null}" UseLayoutRounding="False" BorderThickness="0" ExpandDirection="Up" MouseEnter="Expander_MouseEnter" MouseLeave="Expander_MouseLeave">
@@ -224,5 +251,7 @@
                 </GroupBox>
             </Expander>
         </Grid>
+
+
     </Grid>
 </Window>

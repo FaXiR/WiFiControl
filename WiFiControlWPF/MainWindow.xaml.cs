@@ -25,9 +25,9 @@ namespace WiFiControlWPF
     public partial class MainWindow : Window
     {
         //Возможность исполнения
-        static bool WiFiExecute;
-        static bool PingExecute;
-        static bool MACexecute;
+        static bool WiFiExecute = false;
+        static bool PingExecute = false;
+        static bool MACexecute = false;
         static bool WiFiRestart = false;
         static bool WiFiButtonBlock = false;
 
@@ -44,7 +44,7 @@ namespace WiFiControlWPF
         static List<string> MAC = new List<String>();
 
         /// <summary>
-        /// Пароль от WiFi ctnb
+        /// Пароль от WiFi сети
         /// </summary>
         static string WiFiPassword;
 
@@ -53,8 +53,6 @@ namespace WiFiControlWPF
             InitializeComponent();
             //Проверка на работоспособность
             Test();
-            //Возможность использования Binding
-            this.DataContext = this;
             //Запуск основной части приложения
             Start();
         }
@@ -100,6 +98,7 @@ namespace WiFiControlWPF
             try
             {
                 new CMDWiFi().UpdateInfo();
+
                 WiFiExecute = true;
                 Hidding = Visibility.Hidden;
             }
@@ -120,6 +119,11 @@ namespace WiFiControlWPF
             if (!WiFiExecute)
             {
                 MACexecute = false;
+
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    CheckUserForDisablePC.IsEnabled = false;
+                }));
                 return;
             }
 
@@ -205,6 +209,17 @@ namespace WiFiControlWPF
                     while (true)
                     {
                         WiFi.UpdateInfo();
+
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            if ((bool)CheckUserForDisablePC.IsChecked)
+                            {
+                                if (WiFi.ListMAC.Count == 0)
+                                {
+                                    new CMDCommand().ExecuteForceShutdown();
+                                }
+                            }
+                        }));
                         Thread.Sleep(2000);
                     }
                 }
@@ -304,11 +319,11 @@ namespace WiFiControlWPF
                                 case "Запущено":
                                     W_WiFiStatus.Value = 4;
                                     break;
-                                case "Выключено":
+                                case "Не запущено":
                                     W_WiFiStatus.Value = 2;
                                     break;
                                 default: //Неизвестно
-                                    W_WiFiStatus.Value = 1;
+                            W_WiFiStatus.Value = 1;
                                     break;
                             }
 
@@ -336,14 +351,14 @@ namespace WiFiControlWPF
 
                             foreach (string mac in OutMACList)
                             {
-                                // Create a button.
-                                TextBlock ad = new TextBlock()
+                        // Create a button.
+                        TextBlock ad = new TextBlock()
                                 {
                                     Text = mac,
                                     Margin = new Thickness(4)
                                 };
-                                // Add created button to a previously created container.
-                                W_WiFiMacList.Children.Add(ad);
+                        // Add created button to a previously created container.
+                        W_WiFiMacList.Children.Add(ad);
                             }
                         }
                     }));
@@ -474,6 +489,11 @@ namespace WiFiControlWPF
             File.WriteAllText(@"Password.txt", TempPassword);
             WiFiPassword = TempPassword;
 
+        }
+
+        private void Add15Minutes(object sender, RoutedEventArgs e)
+        {
+            //TODO
         }
     }
 }

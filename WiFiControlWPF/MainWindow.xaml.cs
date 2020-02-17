@@ -178,7 +178,7 @@ namespace WiFiControlWPF
             int attemp = 100;
             while (true)
             {
-                if (WiFiExecute)
+                if (PingExecute)
                 {
                     while (true)
                     {
